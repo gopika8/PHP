@@ -48,7 +48,7 @@
                         echo '<td>' . $data['designation'] . '</td>';
                         echo '<td><a href="readUser.php?id='.$data['employeeEmail'].'">View</a></td>';
                         echo '<td><a href="updateUser.php?id='.$data['employeeEmail'].'">Edit</a></td>';
-                        echo '<td><a href="deleteUser.php>id='.$data['employeeEmail'].'">Delete</a></td>';
+                        echo '<td><a href="deleteUser.php?id='.$data['employeeEmail'].'">Delete</a></td>';
                         echo '<tr>';
                     }
                 }
