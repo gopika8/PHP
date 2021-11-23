@@ -12,12 +12,19 @@ $emailError = null;
 $passwordError = null;
 $designationError = null;
 
+
 if (!empty($_POST)) {
     $employeeName = $_POST["employeeName"];
     $employeeDOB = $_POST["employeeDOB"];
     $employeeEmail = $_POST["employeeEmail"];
     $employeePassword = $_POST["employeePassword"];
     $employeeDesignation = $_POST["employeeDesignation"];
+
+    //file upload
+    $targetDir = "uploads/";
+    $fileName = basename($_FILES["file"]["name"]);
+    $targetFilePath = $targetDir . $fileName;
+    $fileType = pathinfo($targetFilePath, PATHINFO_EXTENSION);
 
     $isValid = true;
     if (empty($employeeEmail)) {
@@ -43,16 +50,19 @@ if (!empty($_POST)) {
         $designationError = "Please enter Designation";
         $isValid = false;
     }
+    $allowTypes = array('jpg', 'png', 'jpeg', 'gif', 'pdf');
+    if (in_array($fileType, $allowTypes)) {
 
-    if ($isValid) {
-        $insertQuery = "INSERT INTO `employee` (`employeeName`, `employeeDOB`, `employeeEmail`, `employeePassword`, `designation`)
-        VALUES ('$employeeName', '$employeeDOB', '$employeeEmail', '$employeePassword', '$employeeDesignation')
+        if ($isValid && move_uploaded_file($_FILES["file"]["tmp_name"], $targetFilePath)) {
+            $insertQuery = "INSERT INTO `employee` (`employeeName`, `employeeDOB`, `employeeEmail`, `employeePassword`, `designation`, `verificationDocument`)
+        VALUES ('$employeeName', '$employeeDOB', '$employeeEmail', '$employeePassword', '$employeeDesignation', '$fileName')
         ";
-        if ($con->query($insertQuery) === TRUE) {
-            echo "User Inserted successfully";
-            header("Location: index.php");
-        } else {
-            echo $con->error;
+            if ($con->query($insertQuery) === TRUE) {
+                echo "User Inserted successfully";
+                header("Location: index.php");
+            } else {
+                echo $con->error;
+            }
         }
     }
 }
@@ -74,7 +84,7 @@ if (!empty($_POST)) {
 
 
 <body>
-    <form method="POST" action="createUser.php">
+    <form method="POST" action="createUser.php" enctype="multipart/form-data">
         <div>
             <label>Employee Name : </label>
             <input name="employeeName" type="text" value="<?php echo !empty($employeeName) ? $employeeName : "" ?>" />
@@ -99,6 +109,10 @@ if (!empty($_POST)) {
             <label>Employee Designation : </label>
             <input name="employeeDesignation" type="text" value="<?php echo !empty($employeeDesignation) ? $employeeDesignation : "" ?>" />
             <br><span><?php echo "$designationError" ?></span>
+        </div>
+        <div>
+            <label>Verfication Document : </label>
+            <input type="file" name="file" />
         </div>
         <div>
             <button type="submit">Create</button>
