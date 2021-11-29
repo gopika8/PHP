@@ -11,6 +11,7 @@ $ageError = null;
 $emailError = null;
 $passwordError = null;
 $designationError = null;
+$salaryError = null;
 
 
 if (!empty($_POST)) {
@@ -19,6 +20,7 @@ if (!empty($_POST)) {
     $employeeEmail = $_POST["employeeEmail"];
     $employeePassword = $_POST["employeePassword"];
     $employeeDesignation = $_POST["employeeDesignation"];
+    $employeeSalary = $_POST["employeeSalary"];
 
     //file upload
     $targetDir = "uploads/";
@@ -50,13 +52,16 @@ if (!empty($_POST)) {
         $designationError = "Please enter Designation";
         $isValid = false;
     }
+    if (empty($employeeSalary)) {
+        $salaryError = "Please enter Salary";
+        $isValid = false;
+    }
     $allowTypes = array('jpg', 'png', 'jpeg', 'gif', 'pdf');
     if (in_array($fileType, $allowTypes)) {
 
         if ($isValid && move_uploaded_file($_FILES["file"]["tmp_name"], $targetFilePath)) {
-            $insertQuery = "INSERT INTO `employee` (`employeeName`, `employeeDOB`, `employeeEmail`, `employeePassword`, `designation`, `verificationDocument`)
-        VALUES ('$employeeName', '$employeeDOB', '$employeeEmail', '$employeePassword', '$employeeDesignation', '$fileName')
-        ";
+            $insertQuery = "INSERT INTO `employee` (`employeeName`, `employeeDOB`, `employeeEmail`, `employeePassword`, `designation`, `verificationDocument`, `employeeSalary`)
+        VALUES ('$employeeName', '$employeeDOB', '$employeeEmail', '$employeePassword', '$employeeDesignation', '$fileName', '$employeeSalary')";
             if ($con->query($insertQuery) === TRUE) {
                 echo "User Inserted successfully";
                 header("Location: index.php");
@@ -113,6 +118,11 @@ if (!empty($_POST)) {
         <div>
             <label>Verfication Document : </label>
             <input type="file" name="file" />
+        </div>
+        <div>
+            <label>Employee Salary : </label>
+            <input name="employeeSalary" type="text" value="<?php echo !empty($employeeSalary) ? $employeeSalary : "" ?>" />
+            <br><span><?php echo "$salaryError" ?></span>
         </div>
         <div>
             <button type="submit">Create</button>
